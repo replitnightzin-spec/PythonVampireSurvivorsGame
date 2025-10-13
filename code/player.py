@@ -23,25 +23,36 @@ class Player(pygame.sprite.Sprite):
             self.direction = self.direction.normalize()
 
     def move(self, dt):
+        # MOVIMENTO HORIZONTAL
         self.hitbox_rect.x += self.direction.x * self.speed * dt
-        self.collision('horizontal')
+        self.horizontal_collision()
+
+        # MOVIMENTO VERTICAL
         self.hitbox_rect.y += self.direction.y * self.speed * dt
-        self.collision('vertical')
+        self.vertical_collision()
+
+        # Sincronizar o rect do sprite com a hitbox
         self.rect.center = self.hitbox_rect.center
 
-    def collision(self, direction):
+    def horizontal_collision(self):
         for sprite in self.collision_sprites:
-            if sprite.rect.colliderect(self.hitbox_rect):
-                if direction == 'horizontal':
-                    if self.direction.x > 0:
-                        self.hitbox_rect.right = sprite.rect.left
-                    if self.direction.x < 0:
-                        self.hitbox_rect.left = sprite.rect.right
-                else:
-                    if self.direction.y < 0:
-                        self.hitbox_rect.top = sprite.rect.bottom
-                    if self.direction.y > 0:
-                        self.hitbox_rect.bottom = sprite.rect.top
+            if self.hitbox_rect.colliderect(sprite.rect):
+                if self.direction.x > 0:  # movendo para direita
+                    overlap = self.hitbox_rect.right - sprite.rect.left
+                    self.hitbox_rect.right -= overlap
+                elif self.direction.x < 0:  # movendo para esquerda
+                    overlap = sprite.rect.right - self.hitbox_rect.left
+                    self.hitbox_rect.left += overlap
+
+    def vertical_collision(self):
+        for sprite in self.collision_sprites:
+            if self.hitbox_rect.colliderect(sprite.rect):
+                if self.direction.y > 0:  # movendo para baixo
+                    overlap = self.hitbox_rect.bottom - sprite.rect.top
+                    self.hitbox_rect.bottom -= overlap
+                elif self.direction.y < 0:  # movendo para cima
+                    overlap = sprite.rect.bottom - self.hitbox_rect.top
+                    self.hitbox_rect.top += overlap
 
     def update(self, dt):
         self.input()
