@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = pygame.image.load('S:\\Vscode\\aBUBU\\VampireSurvivorsPyGAME\\Vampire survivor\\images\player\\down\\0.png').convert_alpha()
         self.rect = self.image.get_rect(center = pos)
-        self.hitbox_rect = self.rect.inflate(-90,0)
+        self.hitbox_rect = self.rect.inflate(-60,0)
 
         # movement
         self.direction = pygame.Vector2()
