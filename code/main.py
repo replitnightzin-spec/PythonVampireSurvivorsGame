@@ -5,6 +5,7 @@ from settings import *
 from player import Player
 from sprites import *
 from pytmx.util_pygame import load_pygame
+from groups import AllSprites
 
 class Game:
     def __init__(self):
@@ -15,7 +16,7 @@ class Game:
         self.running = True
 
         # GROUPS
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
 
         self.setup()
@@ -45,7 +46,7 @@ class Game:
             self.all_sprites.update(dt)
             # draw
             self.display_surface.fill('black')
-            self.all_sprites.draw(self.display_surface)
+            self.all_sprites.draw(self.player.rect.center)
             # pygame.draw.rect(self.display_surface, 'red', self.player.hitbox_rect)
             pygame.display.update()
         pygame.quit()
