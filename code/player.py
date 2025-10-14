@@ -5,7 +5,9 @@ from settings import *
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, collision_sprites):
         super().__init__(groups)
+        self.load_images()
         self.image = pygame.image.load('S:\\Vscode\\aBUBU\\VampireSurvivorsPyGAME\\Vampire survivor\\images\player\\down\\0.png').convert_alpha()
+        self.state, self.frame_index = 'down', 0
         self.rect = self.image.get_rect(center = pos)
         self.hitbox_rect = self.rect.inflate(-60,-60)
 
@@ -13,6 +15,18 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.Vector2()
         self.speed = 500
         self.collision_sprites = collision_sprites
+
+    def load_images(self):
+        self.frames = {'left':[],'right':[],'up':[],'down':[],}
+
+
+        for state in self.frames.keys():
+            for folder_path, sub_folder, file_names in walk(join('S:\\Vscode\\aBUBU\\VampireSurvivorsPyGAME\\Vampire survivor\\images\\player', state)):
+               if file_names:
+                   for file_name in sorted(file_names, key=lambda name: int(name.split('.')[0])):
+                       full_path = join(folder_path, file_name)
+                       surf = pygame.image.load(full_path).convert_alpha()
+                       self.frames[state].append(surf)
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -54,6 +68,19 @@ class Player(pygame.sprite.Sprite):
                     overlap = sprite.rect.bottom - self.hitbox_rect.top
                     self.hitbox_rect.top += overlap
 
+    def animate(self, dt):
+        # get state
+        if self.direction.x != 0:
+            self.state = 'right' if self.direction.x > 0 else 'left'
+        if self.direction.y != 0:
+            self.state = 'down' if self.direction.y > 0 else 'up'
+
+
+        # get animate
+        self.frame_index += 5 * dt if self.direction else 0
+        self.image = self.frames[self.state][int(self.frame_index) % len(self.frames[self.state])]
+
     def update(self, dt):
         self.input()
         self.move(dt)
+        self.animate(dt)
